@@ -33,29 +33,66 @@ pipeline {
             }
         }
 
+        // stage("Push the changed deployment file to Git") {
+        //     steps {
+        //         withCredentials([usernamePassword(
+        //             credentialsId: 'github',
+        //             usernameVariable: 'GIT_USER',
+        //             passwordVariable: 'GIT_TOKEN'
+        //         )]) {
+        //             withEnv(["GIT_PUSH_URL=https://${GIT_USER}:${GIT_TOKEN}@github.com/SirSaifUrRahman/gitops-register-app.git"]) {
+                        
+        //                 sh '''
+        //                     echo "Checking repository status: "
+        //                     git status
+
+        //                     echo "Adding changes to git: "
+        //                     git add .
+
+        //                     echo "Committing changes: "
+        //                     git commit -m "Updated Deployment Manifest" || echo "Nothing to commit"
+
+        //                     echo "Pushing changes to GitHub: "
+        //                     git push "$GIT_PUSH_URL" main
+        //                 '''
+        //             }
+        //         }
+        //     }
+        // }
+
         stage("Push the changed deployment file to Git") {
             steps {
-                withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
-                        sh '''
-                            echo "Checking repository status: "
-                            git status
+                withCredentials([usernamePassword(
+                    credentialsId: 'github',
+                    usernameVariable: 'GIT_USER',
+                    passwordVariable: 'GIT_TOKEN'
+                )]) {
+                    sh '''
+                        git config user.name "$GIT_USER"
+                        git config user.email "ssaifurrahman21@gmail.com"
+                        git remote set-url origin https://$GIT_USER:$GIT_TOKEN@github.com/SirSaifUrRahman/gitops-register-app.git
 
-                            echo "Adding changes to git: "
-                            git add .
+                        echo "Checking repository status: "
+                        git status
 
-                            echo "Committing changes: "
-                            git commit -m "Updated Deployment Manifest" || echo "Nothing to commit"
+                        echo "Adding changes to git: "
+                        git add .
 
-                            echo "Pushing changes to GitHub: "
-                            git push "https://github.com/SirSaifUrRahman/gitops-register-app.git" main
-                        '''
-                    }
+                        echo "Committing changes: "
+                        git commit -m "Updated Deployment Manifest" || echo "Nothing to commit"
+
+                        echo "Pushing changes to GitHub: "
+                        git push origin main
+                    '''
                 }
             }
         }
+
+
+      
     }
 
-    post{
+    post {
         success {
             script {
                 emailext attachLog: true,
