@@ -35,22 +35,77 @@ pipeline {
 
         stage("Push the changed deployment file to Git") {
             steps {
-                sh """
-                    git config --global user.name "SirSaifUrRahman"
-                    git config --global user.email "ssaifurrahman21@gmail.com"
-                    git add deployment.yaml
-                    git commit -m "Updated Deployment Manifest"
-                """
                 withCredentials([usernamePassword(
                     credentialsId: 'github',
                     usernameVariable: 'GIT_USER',
                     passwordVariable: 'GIT_TOKEN'
                 )]) {
-                    sh "git push https://${GIT_USER}:${GIT_TOKEN}@github.com/SirSaifUrRahman/gitops-register-app.git main"
+                    
+                    sh """
+                        echo "Checking repository status: "
+                        git status
+
+                        echo "Adding changes to git: "
+                        git add .                
+                        
+                        echo "Commiting changes: "
+                        git commit -m "Updated Deployment Manifest"
+                        
+                        echo "Pushing changes to github: "
+                        git push https://${GIT_USER}:${GIT_TOKEN}@github.com/SirSaifUrRahman/gitops-register-app.git main
+                    """
                 }
 
             }
         }
       
+    }
+
+    post {
+        success {
+            script {
+                emailext attachLog: true,
+                from: 'ssaifurrahman21@gmail.com',
+                subject: "Register Application has been updated and deployed - '${currentBuild.result}'",
+                body: """
+                    <html>
+                    <body>
+                        <div style="background-color: #FFA07A; padding: 10px; margin-bottom: 10px;">
+                            <p style="color: black; font-weight: bold;">Project: ${env.JOB_NAME}</p>
+                        </div>
+                        <div style="background-color: #90EE90; padding: 10px; margin-bottom: 10px;">
+                            <p style="color: black; font-weight: bold;">Build Number: ${env.BUILD_NUMBER}</p>
+                        </div>
+                        <div style="background-color: #87CEEB; padding: 10px; margin-bottom: 10px;">
+                            <p style="color: black; font-weight: bold;">URL: ${env.BUILD_URL}</p>
+                        </div>
+                    </body>
+                    </html>
+            """,
+            to: 'ssaifurrahman21@gmail.com',
+            mimeType: 'text/html'
+            }
+        }
+      failure {
+            script {
+                emailext attachLog: true,
+                from: 'ssaifurrahman21@gmail.com',
+                subject: "Register Application build failed - '${currentBuild.result}'",
+                body: """
+                    <html>
+                    <body>
+                        <div style="background-color: #FFA07A; padding: 10px; margin-bottom: 10px;">
+                            <p style="color: black; font-weight: bold;">Project: ${env.JOB_NAME}</p>
+                        </div>
+                        <div style="background-color: #90EE90; padding: 10px; margin-bottom: 10px;">
+                            <p style="color: black; font-weight: bold;">Build Number: ${env.BUILD_NUMBER}</p>
+                        </div>
+                    </body>
+                    </html>
+            """,
+            to: 'ssaifurrahman21@gmail.com',
+            mimeType: 'text/html'
+            }
+        }
     }
 }
