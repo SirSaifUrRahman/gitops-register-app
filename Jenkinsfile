@@ -53,11 +53,9 @@ pipeline {
                 }
             }
         }
-
-      
     }
 
-    post {
+    post{
         success {
             script {
                 emailext attachLog: true,
