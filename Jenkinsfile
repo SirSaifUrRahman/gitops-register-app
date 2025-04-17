@@ -1,11 +1,8 @@
 pipeline {
     agent { label "habib-node" }
-    environment {
-        APP_NAME = "register-app-pipeline"
-    }
     
     parameters {
-        string(name: 'APP_NAME', defaultValue: '')
+        string(name: 'APP_NAME', defaultValue: 'register-app-pipeline')
         string(name: 'RELEASE', defaultValue: '')
         string(name: 'DOCKER_USER', defaultValue: '')
         string(name: 'IMAGE_NAME', defaultValue: '')
@@ -30,7 +27,7 @@ pipeline {
             steps {
                 sh """
                    cat deployment.yaml
-                   sed -i "s|^\(\s*image:\s*saif764/register-app-pipeline:\).*|\1${IMAGE_TAG}|" deployment.yaml
+                   sed -i "s|^\(\s*image:\s*${DOCKER_USER}/${APP_NAME}:\).*|\1${IMAGE_TAG}|" deployment.yaml
                    cat deployment.yaml
                 """
             }
@@ -39,14 +36,19 @@ pipeline {
         stage("Push the changed deployment file to Git") {
             steps {
                 sh """
-                   git config --global user.name "SirSaifUrRahman"
-                   git config --global user.email "ssaifurrahman21@gmail.com"
-                   git add deployment.yaml
-                   git commit -m "Updated Deployment Manifest"
+                    git config --global user.name "SirSaifUrRahman"
+                    git config --global user.email "ssaifurrahman21@gmail.com"
+                    git add deployment.yaml
+                    git commit -m "Updated Deployment Manifest"
                 """
-                withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
-                  sh "git push https://github.com/SirSaifUrRahman/gitops-register-app main"
+                withCredentials([usernamePassword(
+                    credentialsId: 'github',
+                    usernameVariable: 'GIT_USER',
+                    passwordVariable: 'GIT_TOKEN'
+                )]) {
+                    sh "git push https://${GIT_USER}:${GIT_TOKEN}@github.com/SirSaifUrRahman/gitops-register-app.git main"
                 }
+
             }
         }
       
