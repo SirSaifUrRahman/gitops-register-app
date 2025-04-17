@@ -47,7 +47,7 @@ pipeline {
                             git commit -m "Updated Deployment Manifest" || echo "Nothing to commit"
 
                             echo "Pushing changes to GitHub: "
-                            git push "$GIT_PUSH_URL" main
+                            git push "https://github.com/SirSaifUrRahman/gitops-register-app.git" main
                         '''
                     }
                 }
