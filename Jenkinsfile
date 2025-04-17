@@ -35,12 +35,7 @@ pipeline {
 
         stage("Push the changed deployment file to Git") {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'github',
-                    usernameVariable: 'GIT_USER',
-                    passwordVariable: 'GIT_TOKEN'
-                )]) {
-                    withEnv(["GIT_PUSH_URL=https://${GIT_USER}:${GIT_TOKEN}@github.com/SirSaifUrRahman/gitops-register-app.git"]) {
+                withCredentials([gitUsernamePassword(credentialsId: 'github', gitToolName: 'Default')]) {
                         sh '''
                             echo "Checking repository status: "
                             git status
