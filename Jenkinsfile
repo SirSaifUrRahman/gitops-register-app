@@ -1,8 +1,17 @@
 pipeline {
     agent { label "habib-node" }
     environment {
-              APP_NAME = "register-app-pipeline"
+        APP_NAME = "register-app-pipeline"
     }
+    
+    parameters {
+        string(name: 'APP_NAME', defaultValue: '')
+        string(name: 'RELEASE', defaultValue: '')
+        string(name: 'DOCKER_USER', defaultValue: '')
+        string(name: 'IMAGE_NAME', defaultValue: '')
+        string(name: 'IMAGE_TAG', defaultValue: '')
+    }
+
 
     stages {
         stage("Cleanup Workspace") {
