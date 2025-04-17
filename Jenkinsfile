@@ -7,7 +7,7 @@ pipeline {
         string(name: 'DOCKER_USER', defaultValue: '')
         string(name: 'IMAGE_NAME', defaultValue: '')
         string(name: 'IMAGE_TAG', defaultValue: '')
-        string(name: 'BUILD_NUM_OF_CD', defaultValue: '')
+        string(name: 'BUILD_NUM_OF_CI', defaultValue: '')
     }
 
     stages {
@@ -105,10 +105,10 @@ pipeline {
                             <p style="color: black; font-weight: bold;">Project: ${env.JOB_NAME}</p>
                         </div>
                         <div style="background-color:rgb(194, 252, 194); padding: 10px; margin-bottom: 10px;">
-                            <p style="color: black; font-weight: bold;">Build Number: ${env.BUILD_NUMBER}</p>
+                            <p style="color: black; font-weight: bold;">Build Number Of CD Job: ${env.BUILD_NUMBER}</p>
                         </div>
                         <div style="background-color:rgb(252, 223, 160); padding: 10px; margin-bottom: 10px;">
-                            <p style="color: black; font-weight: bold;">Build Number Of CD Job: ${BUILD_NUM_OF_CD}</p>
+                            <p style="color: black; font-weight: bold;">Build Number Of CI Job: ${BUILD_NUM_OF_CI}</p>
                         </div>
                         <div style="background-color:rgb(191, 236, 253); padding: 10px; margin-bottom: 10px;">
                             <p style="color: black; font-weight: bold;">URL: ${env.BUILD_URL}</p>
